@@ -1084,18 +1084,40 @@ function toggleFaq(el) {
 function scrollToWaitlist() {
   document.getElementById('waitlist').scrollIntoView({ behavior: 'smooth' });
   setTimeout(() => document.getElementById('waitlistEmail').focus(), 600);
-}
-function handleSignup(e) {
+async function handleSignup(e) {
   e.preventDefault();
-  const email = document.getElementById('waitlistEmail').value;
+
+  const emailInput = document.getElementById('waitlistEmail');
+  const email = emailInput.value;
+
   if (!email) return;
+
   const btn = e.target.querySelector('button[type="submit"]');
-  btn.textContent = 'Joining…';
+
+  // 🚫 Double click engelle
+  if (btn.disabled) return;
+
+  // 🔒 Kilitle
   btn.disabled = true;
-  setTimeout(() => {
+  btn.textContent = 'Submitting...';
+
+  try {
+    await fetch("https://script.google.com/macros/s/AKfycbz7EGIsrcKwVpnO9SCtvpsvf3zibJjyXGR3rC5h_iUYcRMwmoRAJ18_EwAIupjY_qSC/exec", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
+
+    // ✅ Success
     document.getElementById('formSuccess').style.display = 'block';
     document.querySelector('.form-row').style.display = 'none';
-  }, 900);
+
+  } catch (err) {
+    alert("Error submitting form");
+
+    // ❌ hata olursa tekrar aç
+    btn.disabled = false;
+    btn.textContent = 'Claim early access';
+  }
 }
 
 /* ── Smooth scroll ── */
